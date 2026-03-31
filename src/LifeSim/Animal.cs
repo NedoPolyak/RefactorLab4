@@ -1,31 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 
 namespace LifeSim;
 
 public abstract class Animal : Organism
 {
-    protected Animal(World world, Point2 pos, Gender? gender = null)
+    protected Animal(World world, Point2 pos, AnimalCharacteristics characteristics, Gender? gender = null)
         : base(world, pos, gender)
     {
+        _characteristics = characteristics;
     }
-
-    protected abstract int Vision { get; }
-
-    protected abstract int MoveCost { get; }
-
-    protected abstract int BiteGain { get; }
-
-    protected abstract int ReproduceThreshold { get; }
-
-    protected abstract int InitialEnergy { get; }
-
-    protected abstract char SelfGlyph { get; }
+    private readonly AnimalCharacteristics _characteristics;
+    protected int Vision => _characteristics.Vision;
+    protected int MoveCost => _characteristics.MoveCost;
+    protected int BiteGain => _characteristics.BiteGain;
+    protected int ReproduceThreshold => _characteristics.ReproduceThreshold;
+    protected int InitialEnergy => _characteristics.InitialEnergy;
+    protected char SelfGlyph => _characteristics.SelfGlyph;
 
     public override char Glyph => SelfGlyph;
-
-    public override ConsoleColor? Color => ConsoleColor.White;
+    public override ConsoleColor? Color => _characteristics.Color;
 
     public int Energy { get; set; }
 
