@@ -13,7 +13,8 @@ public static class Program
 
         const int width = 50;
         const int height = 22;
-        var initialPlants = (int)(width * height * 0.22);
+        const double PlantDensity = 0.22;
+        var initialPlants = (int)(width * height * PlantDensity);
         const int initialHerbivores = 28;
         const int initialPredators = 10;
 
