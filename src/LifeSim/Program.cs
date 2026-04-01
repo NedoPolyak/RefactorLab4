@@ -13,7 +13,8 @@ public static class Program
 
         const int width = 50;
         const int height = 22;
-        var initialPlants = (int)(width * height * 0.22);
+        const double PlantDensity = 0.22;
+        var initialPlants = (int)(width * height * PlantDensity);
         const int initialHerbivores = 28;
         const int initialPredators = 10;
 
@@ -71,7 +72,10 @@ public static class Program
             {
                 if (snapshot.TryGetValue(new Point2(x, y), out var organism))
                 {
-                    organism.ApplyColor();
+                    if (organism.Color.HasValue)
+                    {
+                        Console.ForegroundColor = organism.Color.Value;
+                    }
                     Console.Write(organism.Glyph);
                     Console.ResetColor();
                 }

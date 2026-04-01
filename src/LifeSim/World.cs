@@ -87,7 +87,7 @@ public class World
         _organisms.RemoveAll(o => !o.IsAlive);
     }
 
-    public IEnumerable<Point2> Neighbors8(Point2 p)
+    public IEnumerable<Point2> EmptyNeighbors8(Point2 p)
     {
         for (var dy = -1; dy <= 1; dy++)
         {
@@ -95,19 +95,12 @@ public class World
             {
                 if (dx != 0 || dy != 0)
                 {
-                    yield return Wrap(new Point2(p.X + dx, p.Y + dy));
+                    var n = Wrap(new Point2(p.X + dx, p.Y + dy));
+                    if (IsEmpty(n))
+                    {
+                        yield return n;
+                    }
                 }
-            }
-        }
-    }
-
-    public IEnumerable<Point2> EmptyNeighbors8(Point2 p)
-    {
-        foreach (var n in Neighbors8(p))
-        {
-            if (IsEmpty(n))
-            {
-                yield return n;
             }
         }
     }
@@ -162,29 +155,6 @@ public class World
         return empties.Count == 0 ? null : empties.Pick();
     }
 
-    public Organism? FindNearest<T>(Point2 from, int visionRange)
-        where T : Organism
-    {
-        Organism? best = null;
-        var bestDist = int.MaxValue;
-
-        foreach (var o in All)
-        {
-            if (o is T)
-            {
-                var dx = ToroidalDistance(from.X, o.Pos.X, Width);
-                var dy = ToroidalDistance(from.Y, o.Pos.Y, Height);
-                var distance = dx + dy;
-                if (distance <= visionRange && distance < bestDist)
-                {
-                    best = o;
-                    bestDist = distance;
-                }
-            }
-        }
-
-        return best;
-    }
 
     public string SerializeWorldSnapshot()
     {
@@ -194,9 +164,50 @@ public class World
 
     public IReadOnlyDictionary<Point2, Organism> GridSnapshot() => new Dictionary<Point2, Organism>(_grid);
 
-    private static int ToroidalDistance(int a, int b, int size)
+    public static int ToroidalDistance(int a, int b, int size)
     {
         var diff = Math.Abs(a - b);
         return Math.Min(diff, size - diff);
+    }
+
+    public static int BestToroidalStep(int from, int to, int size)
+    {
+        var direct = to - from;
+        var wrapA = (to + size) - from;
+        var wrapB = to - (from + size);
+
+        var best =
+            Math.Abs(direct) <= Math.Abs(wrapA) && Math.Abs(direct) <= Math.Abs(wrapB)
+                ? direct
+                : Math.Abs(wrapA) < Math.Abs(wrapB)
+                    ? wrapA
+                    : wrapB;
+
+        return Math.Sign(best);
+    }
+
+    public List<Point2>? GetStepTowardList(Point2 Pos, Point2 target)
+    {
+        var dx = BestToroidalStep(Pos.X, target.X, Width);
+        var dy = BestToroidalStep(Pos.Y, target.Y, Height);
+
+        var candidates = new List<Point2>();
+        if (dx != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X + dx, Pos.Y)));
+        }
+
+        if (dy != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X, Pos.Y + dy)));
+        }
+
+        if (dx != 0 && dy != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X + dx, Pos.Y + dy)));
+        }
+
+
+        return candidates.Where(IsEmpty).ToList();
     }
 }

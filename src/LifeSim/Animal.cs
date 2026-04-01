@@ -1,31 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 
 namespace LifeSim;
 
 public abstract class Animal : Organism
 {
-    protected Animal(World world, Point2 pos, Gender? gender = null)
+    protected Animal(World world, Point2 pos, AnimalCharacteristics characteristics, Gender? gender = null)
         : base(world, pos, gender)
     {
+        _characteristics = characteristics;
     }
-
-    protected abstract int Vision { get; }
-
-    protected abstract int MoveCost { get; }
-
-    protected abstract int BiteGain { get; }
-
-    protected abstract int ReproduceThreshold { get; }
-
-    protected abstract int InitialEnergy { get; }
-
-    protected abstract char SelfGlyph { get; }
+    private readonly AnimalCharacteristics _characteristics;
+    protected int Vision => _characteristics.Vision;
+    protected int MoveCost => _characteristics.MoveCost;
+    protected int BiteGain => _characteristics.BiteGain;
+    protected int ReproduceThreshold => _characteristics.ReproduceThreshold;
+    protected int InitialEnergy => _characteristics.InitialEnergy;
+    protected char SelfGlyph => _characteristics.SelfGlyph;
 
     public override char Glyph => SelfGlyph;
-
-    public override ConsoleColor? Color => ConsoleColor.White;
+    public override ConsoleColor? Color => _characteristics.Color;
 
     public int Energy { get; set; }
 
@@ -44,7 +40,7 @@ public abstract class Animal : Organism
         if (prey != null)
         {
             StepToward(prey.Pos);
-            if (AreNeighborsOrSame(Pos, prey.Pos) && prey.IsAlive)
+            if (Point2.AreNeighborsOrSame(Pos, prey.Pos) && prey.IsAlive)
             {
                 World.Remove(prey);
                 Energy += BiteGain;
@@ -78,31 +74,9 @@ public abstract class Animal : Organism
 
     protected abstract Animal MakeChild(Point2 p);
 
-    protected static bool AreNeighborsOrSame(Point2 a, Point2 b) =>
-        Math.Abs(a.X - b.X) <= 1 && Math.Abs(a.Y - b.Y) <= 1;
-
     protected void StepToward(Point2 target)
     {
-        var dx = BestToroidalStep(Pos.X, target.X, World.Width);
-        var dy = BestToroidalStep(Pos.Y, target.Y, World.Height);
-
-        var candidates = new List<Point2>();
-        if (dx != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X + dx, Pos.Y)));
-        }
-
-        if (dy != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X, Pos.Y + dy)));
-        }
-
-        if (dx != 0 && dy != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X + dx, Pos.Y + dy)));
-        }
-
-        var free = candidates.Where(World.IsEmpty).ToList();
+        List<Point2>? free = World.GetStepTowardList(Pos, target);
         if (free.Count == 0)
         {
             Wander();
@@ -121,19 +95,4 @@ public abstract class Animal : Organism
         }
     }
 
-    private static int BestToroidalStep(int from, int to, int size)
-    {
-        var direct = to - from;
-        var wrapA = (to + size) - from;
-        var wrapB = to - (from + size);
-
-        var best =
-            Math.Abs(direct) <= Math.Abs(wrapA) && Math.Abs(direct) <= Math.Abs(wrapB)
-                ? direct
-                : Math.Abs(wrapA) < Math.Abs(wrapB)
-                    ? wrapA
-                    : wrapB;
-
-        return Math.Sign(best);
-    }
 }

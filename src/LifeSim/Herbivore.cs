@@ -3,25 +3,22 @@ namespace LifeSim;
 public class Herbivore : Animal
 {
     public Herbivore(World world, Point2 pos, Gender? gender = null)
-        : base(world, pos, gender)
+        : base(world, pos, _characteristics, gender)
     {
     }
 
-    protected override int Vision => 8;
+    private static readonly AnimalCharacteristics _characteristics = new AnimalCharacteristics
+    {
+        Vision = 8,
+        MoveCost = 2,
+        BiteGain = 18,
+        ReproduceThreshold = 60,
+        InitialEnergy = 30,
+        SelfGlyph = 'h',
+        Color = ConsoleColor.Yellow
+    };
 
-    protected override int MoveCost => 2;
-
-    protected override int BiteGain => 18;
-
-    protected override int ReproduceThreshold => 60;
-
-    protected override int InitialEnergy => 30;
-
-    protected override char SelfGlyph => 'h';
-
-    public override System.ConsoleColor? Color => System.ConsoleColor.Yellow;
-
-    protected override Organism? FindPrey() => World.FindNearest<Plant>(Pos, Vision);
+    protected override Organism? FindPrey() => FindNearest<Plant>(Pos, Vision);
 
     protected override Animal MakeChild(Point2 p) => new Herbivore(World, p);
 }
