@@ -76,26 +76,7 @@ public abstract class Animal : Organism
 
     protected void StepToward(Point2 target)
     {
-        var dx = World.BestToroidalStep(Pos.X, target.X, World.Width);
-        var dy = World.BestToroidalStep(Pos.Y, target.Y, World.Height);
-
-        var candidates = new List<Point2>();
-        if (dx != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X + dx, Pos.Y)));
-        }
-
-        if (dy != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X, Pos.Y + dy)));
-        }
-
-        if (dx != 0 && dy != 0)
-        {
-            candidates.Add(World.Wrap(new Point2(Pos.X + dx, Pos.Y + dy)));
-        }
-
-        var free = candidates.Where(World.IsEmpty).ToList();
+        List<Point2>? free = World.GetStepTowardList(Pos, target);
         if (free.Count == 0)
         {
             Wander();

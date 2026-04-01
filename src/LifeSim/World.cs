@@ -215,4 +215,29 @@ public class World
 
         return Math.Sign(best);
     }
+
+    public List<Point2>? GetStepTowardList(Point2 Pos, Point2 target)
+    {
+        var dx = BestToroidalStep(Pos.X, target.X, Width);
+        var dy = BestToroidalStep(Pos.Y, target.Y, Height);
+
+        var candidates = new List<Point2>();
+        if (dx != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X + dx, Pos.Y)));
+        }
+
+        if (dy != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X, Pos.Y + dy)));
+        }
+
+        if (dx != 0 && dy != 0)
+        {
+            candidates.Add(Wrap(new Point2(Pos.X + dx, Pos.Y + dy)));
+        }
+
+
+        return candidates.Where(IsEmpty).ToList();
+    }
 }
