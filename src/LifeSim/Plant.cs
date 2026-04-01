@@ -7,6 +7,7 @@ public class Plant : Organism
     private const int MatureAge = 6;
     private const double SpreadChance = 0.18;
     private const int MaxAge = 250;
+    private const double DeathChance = 0.01;
 
     public Plant(World world, Point2 pos, Gender? gender = null)
         : base(world, pos, gender)
@@ -30,7 +31,7 @@ public class Plant : Organism
             }
         }
 
-        if (Age > MaxAge && Rand.Chance(0.01))
+        if (Age > MaxAge && Rand.Chance(DeathChance))
         {
             World.Remove(this);
         }
