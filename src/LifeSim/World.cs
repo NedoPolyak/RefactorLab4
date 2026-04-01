@@ -87,7 +87,7 @@ public class World
         _organisms.RemoveAll(o => !o.IsAlive);
     }
 
-    public IEnumerable<Point2> Neighbors8(Point2 p)
+    public IEnumerable<Point2> EmptyNeighbors8(Point2 p)
     {
         for (var dy = -1; dy <= 1; dy++)
         {
@@ -95,19 +95,12 @@ public class World
             {
                 if (dx != 0 || dy != 0)
                 {
-                    yield return Wrap(new Point2(p.X + dx, p.Y + dy));
+                    var n = Wrap(new Point2(p.X + dx, p.Y + dy));
+                    if (IsEmpty(n))
+                    {
+                        yield return n;
+                    }
                 }
-            }
-        }
-    }
-
-    public IEnumerable<Point2> EmptyNeighbors8(Point2 p)
-    {
-        foreach (var n in Neighbors8(p))
-        {
-            if (IsEmpty(n))
-            {
-                yield return n;
             }
         }
     }
