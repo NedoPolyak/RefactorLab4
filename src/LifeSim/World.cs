@@ -155,29 +155,6 @@ public class World
         return empties.Count == 0 ? null : empties.Pick();
     }
 
-    public Organism? FindNearest<T>(Point2 from, int visionRange)
-        where T : Organism
-    {
-        Organism? best = null;
-        var bestDist = int.MaxValue;
-
-        foreach (var o in All)
-        {
-            if (o is T)
-            {
-                var dx = ToroidalDistance(from.X, o.Pos.X, Width);
-                var dy = ToroidalDistance(from.Y, o.Pos.Y, Height);
-                var distance = dx + dy;
-                if (distance <= visionRange && distance < bestDist)
-                {
-                    best = o;
-                    bestDist = distance;
-                }
-            }
-        }
-
-        return best;
-    }
 
     public string SerializeWorldSnapshot()
     {
@@ -187,7 +164,7 @@ public class World
 
     public IReadOnlyDictionary<Point2, Organism> GridSnapshot() => new Dictionary<Point2, Organism>(_grid);
 
-    private static int ToroidalDistance(int a, int b, int size)
+    public static int ToroidalDistance(int a, int b, int size)
     {
         var diff = Math.Abs(a - b);
         return Math.Min(diff, size - diff);

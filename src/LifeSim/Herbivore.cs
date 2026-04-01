@@ -18,7 +18,7 @@ public class Herbivore : Animal
         Color = ConsoleColor.Yellow
     };
 
-    protected override Organism? FindPrey() => World.FindNearest<Plant>(Pos, Vision);
+    protected override Organism? FindPrey() => FindNearest<Plant>(Pos, Vision);
 
     protected override Animal MakeChild(Point2 p) => new Herbivore(World, p);
 }

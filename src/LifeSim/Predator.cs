@@ -18,7 +18,7 @@ public class Predator : Animal
         Color = System.ConsoleColor.Red
     };
 
-    protected override Organism? FindPrey() => World.FindNearest<Herbivore>(Pos, Vision);
+    protected override Organism? FindPrey() => FindNearest<Herbivore>(Pos, Vision);
 
     protected override Animal MakeChild(Point2 p) => new Predator(World, p);
 }

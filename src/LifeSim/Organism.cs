@@ -28,4 +28,28 @@ public abstract class Organism
     public virtual void Tick() => Age++;
 
     private static Gender PickGender() => Rand.Chance(0.5) ? Gender.Female : Gender.Male;
+
+    public Organism? FindNearest<T>(Point2 from, int visionRange)
+       where T : Organism
+    {
+        Organism? best = null;
+        var bestDist = int.MaxValue;
+
+        foreach (var o in World.All)
+        {
+            if (o is T)
+            {
+                var dx = World.ToroidalDistance(from.X, o.Pos.X, World.Width);
+                var dy = World.ToroidalDistance(from.Y, o.Pos.Y, World.Height);
+                var distance = dx + dy;
+                if (distance <= visionRange && distance < bestDist)
+                {
+                    best = o;
+                    bestDist = distance;
+                }
+            }
+        }
+
+        return best;
+    }
 }
