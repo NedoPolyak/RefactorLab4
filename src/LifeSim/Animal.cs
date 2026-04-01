@@ -76,8 +76,8 @@ public abstract class Animal : Organism
 
     protected void StepToward(Point2 target)
     {
-        var dx = BestToroidalStep(Pos.X, target.X, World.Width);
-        var dy = BestToroidalStep(Pos.Y, target.Y, World.Height);
+        var dx = World.BestToroidalStep(Pos.X, target.X, World.Width);
+        var dy = World.BestToroidalStep(Pos.Y, target.Y, World.Height);
 
         var candidates = new List<Point2>();
         if (dx != 0)
@@ -114,19 +114,4 @@ public abstract class Animal : Organism
         }
     }
 
-    private static int BestToroidalStep(int from, int to, int size)
-    {
-        var direct = to - from;
-        var wrapA = (to + size) - from;
-        var wrapB = to - (from + size);
-
-        var best =
-            Math.Abs(direct) <= Math.Abs(wrapA) && Math.Abs(direct) <= Math.Abs(wrapB)
-                ? direct
-                : Math.Abs(wrapA) < Math.Abs(wrapB)
-                    ? wrapA
-                    : wrapB;
-
-        return Math.Sign(best);
-    }
 }

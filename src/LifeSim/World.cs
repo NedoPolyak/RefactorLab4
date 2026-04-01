@@ -199,4 +199,20 @@ public class World
         var diff = Math.Abs(a - b);
         return Math.Min(diff, size - diff);
     }
+
+    public static int BestToroidalStep(int from, int to, int size)
+    {
+        var direct = to - from;
+        var wrapA = (to + size) - from;
+        var wrapB = to - (from + size);
+
+        var best =
+            Math.Abs(direct) <= Math.Abs(wrapA) && Math.Abs(direct) <= Math.Abs(wrapB)
+                ? direct
+                : Math.Abs(wrapA) < Math.Abs(wrapB)
+                    ? wrapA
+                    : wrapB;
+
+        return Math.Sign(best);
+    }
 }
